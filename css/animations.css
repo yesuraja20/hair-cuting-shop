@@ -1,0 +1,393 @@
+/* ==========================================================================
+   AUREUS & BLADE - PREMIUM CINEMATIC HAIRCUT ANIMATIONS
+   GPU-Optimized Keyframes & Micro-Interactions
+   ========================================================================== */
+
+/* ==========================================================================
+   1. SCISSORS KINEMATICS & METALLIC SHINE (Requirement 1)
+   ========================================================================== */
+
+/* Scissors Blade Pivot Points & Movement */
+.blade-top-group {
+  transform-origin: 150px 150px;
+  animation: scissorBladeTop 3.2s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+  will-change: transform;
+}
+
+.blade-bottom-group {
+  transform-origin: 150px 150px;
+  animation: scissorBladeBottom 3.2s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+  will-change: transform;
+}
+
+/* Gentle, natural breathing cut cycle */
+@keyframes scissorBladeTop {
+  0% {
+    transform: rotate(0deg);
+  }
+  20% {
+    transform: rotate(-18deg); /* Open blade */
+  }
+  35% {
+    transform: rotate(-22deg); /* Max opening */
+  }
+  48% {
+    transform: rotate(1deg); /* Crisp cut closure */
+  }
+  52% {
+    transform: rotate(-2deg); /* Micro recoil rebound */
+  }
+  58% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes scissorBladeBottom {
+  0% {
+    transform: rotate(0deg);
+  }
+  20% {
+    transform: rotate(18deg);
+  }
+  35% {
+    transform: rotate(22deg);
+  }
+  48% {
+    transform: rotate(-1deg);
+  }
+  52% {
+    transform: rotate(2deg);
+  }
+  58% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+/* Rapid active cutting animation class (triggered on click or cut events) */
+.scissors-active .blade-top-group {
+  animation: scissorSnipFastTop 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.2) forwards;
+}
+
+.scissors-active .blade-bottom-group {
+  animation: scissorSnipFastBottom 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.2) forwards;
+}
+
+@keyframes scissorSnipFastTop {
+  0% { transform: rotate(0deg); }
+  30% { transform: rotate(-28deg); }
+  75% { transform: rotate(2deg); }
+  85% { transform: rotate(-2deg); }
+  100% { transform: rotate(0deg); }
+}
+
+@keyframes scissorSnipFastBottom {
+  0% { transform: rotate(0deg); }
+  30% { transform: rotate(28deg); }
+  75% { transform: rotate(-2deg); }
+  85% { transform: rotate(2deg); }
+  100% { transform: rotate(0deg); }
+}
+
+/* Metallic Specular Gleam Sweep */
+.metallic-shine-path {
+  animation: metallicSheen 3.2s ease-in-out infinite;
+  opacity: 0.15;
+}
+
+@keyframes metallicSheen {
+  0%, 30% {
+    opacity: 0.1;
+    transform: translateX(-40px);
+  }
+  45%, 55% {
+    opacity: 0.9;
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.9)) drop-shadow(0 0 15px rgba(212, 175, 55, 0.6));
+    transform: translateX(30px);
+  }
+  70%, 100% {
+    opacity: 0.1;
+    transform: translateX(100px);
+  }
+}
+
+/* Floating Levitation Movement */
+.floating-scissors-unit {
+  animation: scissorLevitate 6s ease-in-out infinite;
+  will-change: transform;
+}
+
+@keyframes scissorLevitate {
+  0% {
+    transform: translateY(0px) rotate(-6deg);
+  }
+  50% {
+    transform: translateY(-14px) rotate(-2deg);
+  }
+  100% {
+    transform: translateY(0px) rotate(-6deg);
+  }
+}
+
+/* ==========================================================================
+   2. HAIR-CUTTING INTRO SEQUENCE (Requirement 2)
+   ========================================================================== */
+.intro-scissors-wrap {
+  animation: introScissorEntrance 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes introScissorEntrance {
+  0% {
+    opacity: 0;
+    transform: scale(0.6) translateY(50px) rotate(-30deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0) rotate(-10deg);
+  }
+}
+
+@keyframes pulseGlow {
+  0% {
+    transform: scale(0.85);
+    opacity: 0.3;
+  }
+  100% {
+    transform: scale(1.15);
+    opacity: 0.6;
+  }
+}
+
+/* ==========================================================================
+   4. HERO ANIMATIONS (Requirement 4)
+   ========================================================================== */
+
+/* Navbar entrance on load (Requirement 10) */
+.navbar-entrance {
+  animation: navbarSlideDown 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes navbarSlideDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Ken Burns Subtle Background Zoom */
+.ken-burns {
+  animation: kenBurnsZoom 22s cubic-bezier(0.25, 1, 0.5, 1) infinite alternate;
+  will-change: transform;
+}
+
+@keyframes kenBurnsZoom {
+  0% {
+    transform: scale(1) translate3d(0, 0, 0);
+  }
+  100% {
+    transform: scale(1.08) translate3d(-10px, -8px, 0);
+  }
+}
+
+/* Staggered Word Reveal */
+.hero-heading .word.revealed {
+  animation: wordReveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes wordReveal {
+  0% {
+    opacity: 0;
+    transform: translateY(35px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Hero description & CTAs entrance */
+.hero-fade-in {
+  animation: heroItemFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes heroItemFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes blinkDot {
+  0%, 100% {
+    opacity: 1;
+    box-shadow: 0 0 10px #10b981;
+  }
+  50% {
+    opacity: 0.4;
+    box-shadow: 0 0 3px #10b981;
+  }
+}
+
+/* ==========================================================================
+   5. SCROLL REVEAL ANIMATIONS (Requirement 5)
+   ========================================================================== */
+
+/* Base hidden state */
+[data-animate] {
+  opacity: 0;
+  will-change: transform, opacity;
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Fade Up */
+[data-animate="fade-up"] {
+  transform: translateY(40px);
+}
+
+/* Slide Left */
+[data-animate="slide-left"] {
+  transform: translateX(-40px);
+}
+
+/* Slide Right */
+[data-animate="slide-right"] {
+  transform: translateX(40px);
+}
+
+/* Scale In */
+[data-animate="scale-in"] {
+  transform: scale(0.92);
+}
+
+/* In-View Revealed State */
+[data-animate].in-view {
+  opacity: 1;
+  transform: translateY(0) translateX(0) scale(1);
+}
+
+/* Stagger Delay Utilities */
+.stagger-1 { transition-delay: 0.08s; }
+.stagger-2 { transition-delay: 0.16s; }
+.stagger-3 { transition-delay: 0.24s; }
+.stagger-4 { transition-delay: 0.32s; }
+.stagger-5 { transition-delay: 0.40s; }
+.stagger-6 { transition-delay: 0.48s; }
+
+/* ==========================================================================
+   6. SERVICE CARD MICRO-ANIMATIONS (Requirement 6)
+   ========================================================================== */
+
+/* Mini Scissors Icon snipping on card hover */
+.service-card:hover .service-icon-box svg {
+  animation: miniScissorsSnip 0.6s cubic-bezier(0.3, 1.4, 0.4, 1) infinite;
+}
+
+@keyframes miniScissorsSnip {
+  0%, 100% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.2) rotate(-15deg);
+  }
+  70% {
+    transform: scale(1.05) rotate(5deg);
+  }
+}
+
+/* ==========================================================================
+   7. BOOKING LOADING & SUCCESS CHECKMARK ANIMATION (Requirement 7)
+   ========================================================================== */
+
+/* Loading Scissors Spinner */
+@keyframes rotateSpinner {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Drawing the SVG Checkmark */
+@keyframes strokeCircle {
+  0% {
+    stroke-dashoffset: 166;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes strokeCheck {
+  0% {
+    stroke-dashoffset: 48;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Flash pulse for auto-selected service pill */
+@keyframes selectedServiceFlash {
+  0% {
+    box-shadow: 0 0 0 rgba(212, 175, 55, 0.8);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(212, 175, 55, 0.7);
+    transform: scale(1.02);
+  }
+  100% {
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+    transform: scale(1);
+  }
+}
+
+.service-pill-flash {
+  animation: selectedServiceFlash 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ==========================================================================
+   REDUCED MOTION OVERRIDES (Accessibility & Performance)
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  [data-animate] {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  #intro-screen {
+    display: none !important;
+  }
+
+  .ken-burns {
+    animation: none !important;
+    transform: none !important;
+  }
+
+  .floating-scissors-unit {
+    animation: none !important;
+  }
+}
