@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AUREUS & BLADE | Atelier Command & Executive Admin Portal</title>
+  <meta name="description" content="Exclusive administrative portal for Aureus & Blade Master Atelier. Manage appointments, service pricing, and brand visuals.">
+  <meta name="theme-color" content="#070709">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+  <!-- Supabase CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- Admin Stylesheet -->
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+  <!-- Ambient Luxury Glow -->
+  <div class="ambient-admin-bg"></div>
+
+  <!-- ==========================================================================
+       AUTHENTICATION GATE SCREEN (Hidden once logged in)
+       ========================================================================== -->
+  <div class="admin-auth-overlay" id="admin-auth-screen">
+    <div class="admin-auth-card">
+      <div class="auth-crest-icon">⚜</div>
+      <h1>ATELIER VAULT</h1>
+      <p>Master Barber Executive Access</p>
+
+      <form id="admin-login-form">
+        <div class="admin-input-group">
+          <label for="auth-email">Admin Email</label>
+          <input type="email" id="auth-email" class="admin-input" placeholder="admin@aureusblade.com" required value="admin@aureusblade.com">
+        </div>
+
+        <div class="admin-input-group">
+          <label for="auth-pass">Passcode / Password</label>
+          <input type="password" id="auth-pass" class="admin-input" placeholder="••••••••" required value="admin">
+        </div>
+
+        <button type="submit" class="btn-admin-submit" id="btn-login-submit">
+          ACCESS ATELIER CONSOLE &rarr;
+        </button>
+
+        <p style="margin-top: 1rem; font-size: 0.72rem; color: var(--text-muted);">
+          Default credentials: <strong>admin@aureusblade.com</strong> / <strong>admin</strong>
+        </p>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       ADMIN NAVIGATION BAR
+       ========================================================================== -->
+  <header class="admin-navbar">
+    <a href="#" class="admin-brand">
+      <div class="admin-logo-crest">⚜</div>
+      <div class="admin-title-group">
+        <h2>AUREUS &amp; BLADE</h2>
+        <span>Executive Command Console</span>
+      </div>
+    </a>
+
+    <div class="admin-nav-actions">
+      <!-- Live Database Status Badge -->
+      <div class="badge-db-status" id="db-status-badge">
+        <span class="status-indicator-dot"></span>
+        <span id="db-status-text">Connecting...</span>
+      </div>
+
+      <a href="index.html" target="_blank" class="btn-admin-action" title="View Public Website">
+        <span>🌐</span>
+        <span>View Live Site</span>
+      </a>
+
+      <button type="button" class="btn-admin-action" id="btn-admin-logout" title="Sign Out">
+        <span>🔒</span>
+        <span>Sign Out</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ==========================================================================
+       MAIN DASHBOARD WORKSPACE
+       ========================================================================== -->
+  <main class="admin-main">
+
+    <!-- METRICS OVERVIEW -->
+    <div class="metrics-row">
+      <div class="metric-card">
+        <div class="metric-label">Total Reservations</div>
+        <div class="metric-value" id="metric-total-bookings">0</div>
+        <div class="metric-trend">&#8599; Live Client Requests</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-label">Estimated Revenue</div>
+        <div class="metric-value" id="metric-total-revenue">$0</div>
+        <div class="metric-trend">&#9733; Confirmed &amp; Paid</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-label">Confirmed Chairs</div>
+        <div class="metric-value" id="metric-confirmed-bookings">0</div>
+        <div class="metric-trend">&#10003; Ready for Master Barbers</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-label">Pending Approval</div>
+        <div class="metric-value" id="metric-pending-bookings" style="color: var(--accent-amber);">0</div>
+        <div class="metric-trend" style="color: var(--accent-amber);">&#9679; Needs Review</div>
+      </div>
+    </div>
+
+    <!-- TABS BAR -->
+    <div class="dashboard-tabs">
+      <button type="button" class="dash-tab active" data-tab="tab-bookings">
+        <span>📋</span>
+        <span>Customer Bookings</span>
+      </button>
+      <button type="button" class="dash-tab" data-tab="tab-pricing">
+        <span>✂</span>
+        <span>Services &amp; Pricing Details</span>
+      </button>
+      <button type="button" class="dash-tab" data-tab="tab-images">
+        <span>🖼</span>
+        <span>Website Images Manager</span>
+      </button>
+      <button type="button" class="dash-tab" data-tab="tab-settings">
+        <span>⚙</span>
+        <span>Database &amp; Payment Gateway</span>
+      </button>
+    </div>
+
+    <!-- ========================================================================
+         TAB 1: CUSTOMER BOOKINGS LIST
+         ======================================================================== -->
+    <section class="tab-panel active" id="tab-bookings">
+      <div class="section-toolbar">
+        <div class="toolbar-title">
+          <h3>Client Appointments</h3>
+          <p>Real-time customer booking submissions with instant status management</p>
+        </div>
+
+        <div class="toolbar-actions">
+          <div class="search-input-wrap">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="bookings-search" class="search-input" placeholder="Search client, phone, code...">
+          </div>
+
+          <select id="bookings-filter-status" class="filter-select">
+            <option value="all">All Appointments</option>
+            <option value="pending">Pending Only</option>
+            <option value="confirmed">Confirmed</option>
+            <option value="completed">Completed</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+
+          <button type="button" class="btn-admin-action" id="btn-export-csv">
+            <span>📥</span>
+            <span>Export CSV</span>
+          </button>
+
+          <button type="button" class="btn-admin-action" id="btn-refresh-bookings">
+            <span>🔄</span>
+            <span>Refresh</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Code / Date</th>
+              <th>Client Details</th>
+              <th>Ritual Service</th>
+              <th>Barber &amp; Slot</th>
+              <th>Amount / Pay</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="bookings-table-body">
+            <!-- Injected dynamically by admin.js -->
+            <tr>
+              <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 2rem;">
+                Loading client reservations...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ========================================================================
+         TAB 2: SERVICES & PRICING MANAGEMENT
+         ======================================================================== -->
+    <section class="tab-panel" id="tab-pricing">
+      <div class="section-toolbar">
+        <div class="toolbar-title">
+          <h3>Grooming Rituals &amp; Pricing</h3>
+          <p>Adjust service titles, durations, and prices. Changes reflect live on the website.</p>
+        </div>
+
+        <div class="toolbar-actions">
+          <button type="button" class="btn-admin-action" id="btn-add-new-service">
+            <span>➕</span>
+            <span>Add Custom Ritual</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="services-admin-grid" id="services-admin-container">
+        <!-- Injected dynamically by admin.js -->
+      </div>
+    </section>
+
+    <!-- ========================================================================
+         TAB 3: WEBSITE IMAGES MANAGER
+         ======================================================================== -->
+    <section class="tab-panel" id="tab-images">
+      <div class="section-toolbar">
+        <div class="toolbar-title">
+          <h3>Website Visuals &amp; Photography</h3>
+          <p>Update hero backgrounds, barber craftsman portraits, and gallery photographs.</p>
+        </div>
+
+        <div class="toolbar-actions">
+          <button type="button" class="btn-admin-action" id="btn-save-all-images">
+            <span>💾</span>
+            <span>Save All Visuals</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="images-admin-grid" id="images-admin-container">
+        <!-- Injected dynamically by admin.js -->
+      </div>
+    </section>
+
+    <!-- ========================================================================
+         TAB 4: SETTINGS & PAYMENT GATEWAY CONFIGURATION
+         ======================================================================== -->
+    <section class="tab-panel" id="tab-settings">
+      <div class="section-toolbar">
+        <div class="toolbar-title">
+          <h3>Backend &amp; Payment Gateway Settings</h3>
+          <p>Configure your live Supabase database and payment credentials.</p>
+        </div>
+      </div>
+
+      <div class="settings-container">
+        <!-- Supabase Settings -->
+        <div class="settings-card">
+          <h4>
+            <span>⚡</span>
+            <span>Supabase Database Configuration</span>
+          </h4>
+          <p>Enter your Supabase URL &amp; Anon Key from your Supabase Dashboard -> Project Settings -> API.</p>
+
+          <form id="form-settings-supabase">
+            <div class="admin-input-group">
+              <label for="cfg-sb-url">Supabase Project URL</label>
+              <input type="text" id="cfg-sb-url" class="admin-input" placeholder="https://your-project.supabase.co">
+            </div>
+
+            <div class="admin-input-group">
+              <label for="cfg-sb-key">Supabase Public Anon Key</label>
+              <input type="password" id="cfg-sb-key" class="admin-input" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...">
+            </div>
+
+            <button type="submit" class="btn-admin-submit" style="margin-top: 0.5rem;">
+              SAVE SUPABASE CONNECTION
+            </button>
+          </form>
+
+          <div style="margin-top: 1.25rem; padding: 0.85rem; background: rgba(0,0,0,0.4); border-radius: 6px; border: 1px dashed var(--admin-border-light);">
+            <p style="margin: 0; font-size: 0.74rem; color: var(--text-muted);">
+              💡 <strong>Tip</strong>: Run the provided <code style="color: var(--gold);">supabase-schema.sql</code> script in your Supabase SQL Editor to automatically create your tables and policies!
+            </p>
+          </div>
+        </div>
+
+        <!-- Payment Gateway Settings -->
+        <div class="settings-card">
+          <h4>
+            <span>💳</span>
+            <span>Online Payment Gateway Setup</span>
+          </h4>
+          <p>Configure Razorpay, Stripe, or interactive luxury test-mode checkout.</p>
+
+          <form id="form-settings-payment">
+            <div class="admin-input-group">
+              <label for="cfg-pay-provider">Payment Provider</label>
+              <select id="cfg-pay-provider" class="admin-input">
+                <option value="razorpay">Razorpay (Cards, UPI, NetBanking)</option>
+                <option value="stripe">Stripe</option>
+                <option value="simulated">Luxury Atelier Vault (Built-in Test Mode)</option>
+              </select>
+            </div>
+
+            <div class="admin-input-group">
+              <label for="cfg-pay-mode">Gateway Environment</label>
+              <select id="cfg-pay-mode" class="admin-input">
+                <option value="test">Test Mode (Safe testing, no real charges)</option>
+                <option value="live">Live Production Mode</option>
+              </select>
+            </div>
+
+            <div class="admin-input-group">
+              <label for="cfg-pay-key">Key ID / Publishable Key</label>
+              <input type="text" id="cfg-pay-key" class="admin-input" placeholder="rzp_test_... or pk_test_...">
+            </div>
+
+            <div class="admin-input-group">
+              <label for="cfg-pay-curr">Currency</label>
+              <select id="cfg-pay-curr" class="admin-input">
+                <option value="USD">USD ($)</option>
+                <option value="INR">INR (₹)</option>
+                <option value="EUR">EUR (€)</option>
+                <option value="GBP">GBP (£)</option>
+              </select>
+            </div>
+
+            <button type="submit" class="btn-admin-submit" style="margin-top: 0.5rem;">
+              SAVE PAYMENT SETTINGS
+            </button>
+          </form>
+        </div>
+
+        <!-- Admin Account Security -->
+        <div class="settings-card">
+          <h4>
+            <span>🛡</span>
+            <span>Admin Console Security</span>
+          </h4>
+          <p>Update the email and passcode required to unlock this executive portal.</p>
+
+          <form id="form-settings-admin">
+            <div class="admin-input-group">
+              <label for="cfg-admin-email">Admin Login Email</label>
+              <input type="email" id="cfg-admin-email" class="admin-input" value="admin@aureusblade.com">
+            </div>
+
+            <div class="admin-input-group">
+              <label for="cfg-admin-pass">New Passcode</label>
+              <input type="password" id="cfg-admin-pass" class="admin-input" placeholder="New password">
+            </div>
+
+            <button type="submit" class="btn-admin-submit" style="margin-top: 0.5rem;">
+              UPDATE PASSCODE
+            </button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==========================================================================
+       MODAL: EDIT SERVICE & PRICING
+       ========================================================================== -->
+  <div class="admin-modal-overlay" id="edit-service-modal">
+    <div class="admin-modal-box">
+      <button class="modal-close-btn" id="btn-close-service-modal">&times;</button>
+      <h3 style="font-family: 'Cinzel', serif; color: var(--gold-bright); margin-bottom: 0.4rem;" id="modal-service-heading">
+        Edit Grooming Ritual
+      </h3>
+      <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+        Changes will take effect instantly on your public website.
+      </p>
+
+      <form id="form-edit-service">
+        <input type="hidden" id="edit-service-id">
+
+        <div class="admin-input-group">
+          <label for="edit-service-title">Ritual Title</label>
+          <input type="text" id="edit-service-title" class="admin-input" required>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div class="admin-input-group">
+            <label for="edit-service-price">Price ($ / ₹)</label>
+            <input type="number" id="edit-service-price" class="admin-input" step="1" required>
+          </div>
+
+          <div class="admin-input-group">
+            <label for="edit-service-duration">Duration (e.g. 45 MIN)</label>
+            <input type="text" id="edit-service-duration" class="admin-input" required>
+          </div>
+        </div>
+
+        <div class="admin-input-group">
+          <label for="edit-service-desc">Description</label>
+          <textarea id="edit-service-desc" class="admin-input" rows="3"></textarea>
+        </div>
+
+        <button type="submit" class="btn-admin-submit">
+          SAVE CHANGES TO RITUAL
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="admin-toast-container" id="admin-toast-container"></div>
+
+  <!-- Configuration and Client Scripts -->
+  <script src="config.js"></script>
+  <script src="js/supabase-client.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

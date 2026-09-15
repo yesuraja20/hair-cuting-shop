@@ -21,6 +21,10 @@
   <!-- Stylesheets -->
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/animations.css">
+
+  <!-- Supabase & Payment Gateway SDKs -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head>
 <body>
 
@@ -102,7 +106,7 @@
   <section class="hero-section" id="hero">
     <!-- Cinematic Background with slow Ken Burns zoom -->
     <div class="hero-bg-container">
-      <img src="assets/images/hero.jpg" alt="Aureus and Blade Luxury Barber Interior" class="hero-bg-img ken-burns">
+      <img src="assets/images/hero.jpg" alt="Aureus and Blade Luxury Barber Interior" class="hero-bg-img ken-burns" id="hero-bg-img" data-image-key="hero_bg">
       <div class="hero-overlay"></div>
     </div>
 
@@ -510,7 +514,7 @@
         <!-- Barber 1 -->
         <div class="barber-card" data-animate="fade-up">
           <div class="barber-img-wrap">
-            <img src="assets/images/master-barber.jpg" alt="Master Barber Marcus Aurelius" class="barber-img">
+            <img src="assets/images/master-barber.jpg" alt="Master Barber Marcus Aurelius" class="barber-img" data-image-key="barber_marcus">
             <span class="barber-badge">Head Craftsman</span>
           </div>
           <div class="barber-info">
@@ -525,7 +529,7 @@
         <!-- Barber 2 -->
         <div class="barber-card stagger-1" data-animate="fade-up">
           <div class="barber-img-wrap">
-            <img src="assets/images/fade-cut.jpg" alt="Artisan Barber Julian Drake" class="barber-img">
+            <img src="assets/images/fade-cut.jpg" alt="Artisan Barber Julian Drake" class="barber-img" data-image-key="barber_julian">
             <span class="barber-badge">Fade Architect</span>
           </div>
           <div class="barber-info">
@@ -540,7 +544,7 @@
         <!-- Barber 3 -->
         <div class="barber-card stagger-2" data-animate="fade-up">
           <div class="barber-img-wrap">
-            <img src="assets/images/beard-grooming.jpg" alt="Master Shaver Alexander Roy" class="barber-img">
+            <img src="assets/images/beard-grooming.jpg" alt="Master Shaver Alexander Roy" class="barber-img" data-image-key="barber_alexander">
             <span class="barber-badge">Shave Virtuoso</span>
           </div>
           <div class="barber-info">
@@ -581,7 +585,7 @@
       <div class="gallery-grid">
         <!-- Item 1 -->
         <div class="gallery-item" data-category="fades" data-animate="scale-in">
-          <img src="assets/images/fade-cut.jpg" alt="Textured High Fade & Sharp Line" class="gallery-item-img">
+          <img src="assets/images/fade-cut.jpg" alt="Textured High Fade & Sharp Line" class="gallery-item-img" data-image-key="gallery_1">
           <div class="gallery-overlay">
             <div class="gallery-view-icon">&#128269;</div>
             <h4 class="gallery-item-title">Sharp Razor Fade &amp; Textured Crop</h4>
@@ -591,7 +595,7 @@
 
         <!-- Item 2 -->
         <div class="gallery-item stagger-1" data-category="beards" data-animate="scale-in">
-          <img src="assets/images/beard-grooming.jpg" alt="Hot Steamed Towel Shave" class="gallery-item-img">
+          <img src="assets/images/beard-grooming.jpg" alt="Hot Steamed Towel Shave" class="gallery-item-img" data-image-key="gallery_2">
           <div class="gallery-overlay">
             <div class="gallery-view-icon">&#128269;</div>
             <h4 class="gallery-item-title">Steam Towel &amp; Straight Razor Ritual</h4>
@@ -601,7 +605,7 @@
 
         <!-- Item 3 -->
         <div class="gallery-item stagger-2" data-category="shears" data-animate="scale-in">
-          <img src="assets/images/master-barber.jpg" alt="Master Shears Precision Cut" class="gallery-item-img">
+          <img src="assets/images/master-barber.jpg" alt="Master Shears Precision Cut" class="gallery-item-img" data-image-key="gallery_3">
           <div class="gallery-overlay">
             <div class="gallery-view-icon">&#128269;</div>
             <h4 class="gallery-item-title">Japanese Convex Steel Point Cutting</h4>
@@ -611,7 +615,7 @@
 
         <!-- Item 4 -->
         <div class="gallery-item" data-category="classic" data-animate="scale-in">
-          <img src="assets/images/classic-cut.jpg" alt="Executive Tapered Pompadour" class="gallery-item-img">
+          <img src="assets/images/classic-cut.jpg" alt="Executive Tapered Pompadour" class="gallery-item-img" data-image-key="gallery_4">
           <div class="gallery-overlay">
             <div class="gallery-view-icon">&#128269;</div>
             <h4 class="gallery-item-title">The Sovereign Executive Taper</h4>
@@ -621,7 +625,7 @@
 
         <!-- Item 5 -->
         <div class="gallery-item stagger-1" data-category="shears" data-animate="scale-in">
-          <img src="assets/images/hero.jpg" alt="Luxury Salon Atelier Interior" class="gallery-item-img">
+          <img src="assets/images/hero.jpg" alt="Luxury Salon Atelier Interior" class="gallery-item-img" data-image-key="gallery_5">
           <div class="gallery-overlay">
             <div class="gallery-view-icon">&#128269;</div>
             <h4 class="gallery-item-title">Atelier Heritage Interior &amp; Chairs</h4>
@@ -631,7 +635,7 @@
 
         <!-- Item 6 -->
         <div class="gallery-item stagger-2" data-category="fades" data-animate="scale-in">
-          <img src="assets/images/fade-cut.jpg" alt="Low Drop Fade" class="gallery-item-img">
+          <img src="assets/images/fade-cut.jpg" alt="Low Drop Fade" class="gallery-item-img" data-image-key="gallery_6">
           <div class="gallery-overlay">
             <div class="gallery-view-icon">&#128269;</div>
             <h4 class="gallery-item-title">Low Drop Fade with Natural Flow</h4>
@@ -809,6 +813,31 @@
                 <input type="tel" id="client-phone" class="form-input" placeholder="+1 (555) 019-2831" required value="+1 (555) 839-2049">
               </div>
 
+              <h4 class="booking-step-title">
+                <span class="step-num">5</span>
+                <span>Payment &amp; Reservation Method</span>
+              </h4>
+
+              <div class="payment-methods-grid">
+                <label class="payment-method-pill active" id="pay-opt-online-label">
+                  <input type="radio" name="payment_method" value="online" checked>
+                  <div class="pay-pill-title">
+                    <span>💳</span>
+                    <span>Pay Online Now</span>
+                  </div>
+                  <span class="pay-pill-desc">Instant reservation via Card, UPI, or NetBanking</span>
+                </label>
+
+                <label class="payment-method-pill" id="pay-opt-atelier-label">
+                  <input type="radio" name="payment_method" value="atelier">
+                  <div class="pay-pill-title">
+                    <span>💈</span>
+                    <span>Pay at Atelier</span>
+                  </div>
+                  <span class="pay-pill-desc">Settle in cash or card upon arrival at lounge</span>
+                </label>
+              </div>
+
               <!-- Submit Button with Loading & Checkmark Animation State -->
               <button type="submit" class="btn-confirm-booking" id="btn-confirm-appointment">
                 <span class="spinner-icon">✂</span>
@@ -857,6 +886,10 @@
         <div class="confirm-row">
           <span class="label">Location:</span>
           <span class="val">Suite 401 &bull; Aureus Lounge</span>
+        </div>
+        <div class="confirm-row">
+          <span class="label">Payment:</span>
+          <span class="val" id="modal-payment-status" style="color: var(--gold-light);">Confirmed</span>
         </div>
       </div>
 
@@ -951,12 +984,20 @@
 
       <div class="footer-bottom">
         <p>&copy; 2026 Aureus &amp; Blade Barber Atelier. All Rights Reserved. Crafted for Distinguished Gentlemen.</p>
-        <p>Ultra-Fast Performance &bull; GPU-Accelerated Animations &bull; Reduced-Motion Compliant</p>
+        <p>
+          Ultra-Fast Performance &bull; GPU-Accelerated Animations &bull; 
+          <a href="admin.html" class="footer-admin-link">🔒 Executive Admin Portal</a>
+        </p>
       </div>
     </div>
   </footer>
 
-  <!-- Scripts -->
+  <!-- Core Config, Supabase Database & Payment Engine -->
+  <script src="config.js"></script>
+  <script src="js/supabase-client.js"></script>
+  <script src="js/payment.js"></script>
+
+  <!-- Interactive Scripts -->
   <script src="js/scissors.js"></script>
   <script src="js/particles.js"></script>
   <script src="js/booking.js"></script>

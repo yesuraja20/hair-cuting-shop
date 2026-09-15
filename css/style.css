@@ -1932,3 +1932,338 @@ h1, h2, h3, h4, .font-serif {
     padding: 2rem 1.5rem;
   }
 }
+
+/* ==============================================================================
+   PAYMENT METHOD SELECTOR (Requirement: Online Payment Gateway & Atelier)
+   ============================================================================== */
+.payment-methods-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.85rem;
+  margin-bottom: 1.5rem;
+}
+
+.payment-method-pill {
+  display: flex;
+  flex-direction: column;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.02);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  position: relative;
+}
+
+.payment-method-pill input {
+  display: none;
+}
+
+.payment-method-pill:hover {
+  border-color: rgba(212, 175, 55, 0.4);
+  background: rgba(212, 175, 55, 0.03);
+}
+
+.payment-method-pill.active {
+  border-color: var(--gold-primary);
+  background: rgba(212, 175, 55, 0.08);
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.15);
+}
+
+.pay-pill-title {
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: var(--text-primary);
+  margin-bottom: 0.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.pay-pill-desc {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+/* ==============================================================================
+   LUXURY CHECKOUT PAYMENT MODAL (Online Gateway)
+   ============================================================================== */
+.payment-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 2000;
+  background: rgba(7, 7, 9, 0.88);
+  backdrop-filter: blur(16px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.payment-modal-overlay.active {
+  display: flex;
+}
+
+.payment-modal-card {
+  width: 100%;
+  max-width: 440px;
+  background: #0f1015;
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  border-radius: 12px;
+  padding: 2.2rem 2rem;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9), 0 0 30px rgba(212, 175, 55, 0.15);
+  position: relative;
+  animation: modalPopIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.payment-close-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1.2rem;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.6rem;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.payment-close-btn:hover {
+  color: var(--gold-primary);
+}
+
+.payment-header {
+  text-align: center;
+  margin-bottom: 1.2rem;
+}
+
+.payment-crest {
+  font-size: 2rem;
+  color: var(--gold-primary);
+  margin-bottom: 0.2rem;
+}
+
+.payment-header h3 {
+  font-family: 'Cinzel', serif;
+  font-size: 1.25rem;
+  letter-spacing: 2px;
+  color: var(--gold-light);
+}
+
+.payment-header p {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.payment-summary-box {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 0.9rem 1.1rem;
+  margin-bottom: 1.2rem;
+}
+
+.pay-sum-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.95rem;
+}
+
+.pay-sum-label {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.pay-sum-val {
+  font-family: 'Cinzel', serif;
+  font-size: 1.3rem;
+  color: var(--gold-primary);
+}
+
+.pay-sum-meta {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 0.3rem;
+}
+
+.pay-method-tabs {
+  display: flex;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 0.3rem;
+  border-radius: 6px;
+}
+
+.pay-tab {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  padding: 0.5rem;
+  border-radius: 4px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.pay-tab.active {
+  background: rgba(212, 175, 55, 0.15);
+  color: var(--gold-light);
+}
+
+.pay-tab-content {
+  display: none;
+}
+
+.pay-tab-content.active {
+  display: block;
+}
+
+.pay-input-group {
+  margin-bottom: 0.85rem;
+  text-align: left;
+}
+
+.pay-input-group label {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--gold-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 0.25rem;
+}
+
+.pay-input-group input {
+  width: 100%;
+  background: #08080c;
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  padding: 0.6rem 0.8rem;
+  color: var(--text-primary);
+  font-size: 0.85rem;
+}
+
+.pay-input-group input:focus {
+  outline: none;
+  border-color: var(--gold-primary);
+}
+
+.pay-input-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.pay-upi-qr-box {
+  text-align: center;
+  padding: 1rem 0;
+}
+
+.upi-qr-mock {
+  width: 140px;
+  height: 140px;
+  margin: 0 auto;
+  border: 2px dashed var(--gold-primary);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  background: rgba(212, 175, 55, 0.05);
+}
+
+.upi-qr-mock span {
+  font-size: 2rem;
+  color: var(--gold-primary);
+}
+
+.upi-qr-mock small {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+}
+
+.wallet-btn-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 0.5rem 0 1rem;
+}
+
+.wallet-option-btn {
+  background: #000;
+  border: 1px solid var(--border-subtle);
+  color: #fff;
+  border-radius: 6px;
+  padding: 0.75rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.wallet-option-btn:hover {
+  border-color: var(--gold-primary);
+}
+
+.btn-pay-now {
+  width: 100%;
+  background: linear-gradient(135deg, var(--gold-primary) 0%, #b8860b 100%);
+  color: #070709;
+  font-weight: 700;
+  letter-spacing: 1px;
+  font-size: 0.85rem;
+  border: none;
+  border-radius: 6px;
+  padding: 0.8rem 1rem;
+  cursor: pointer;
+  margin-top: 0.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.btn-pay-now:hover {
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+  transform: translateY(-1px);
+}
+
+.pay-security-badge {
+  margin-top: 1rem;
+  text-align: center;
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+/* Footer Admin Entry Link */
+.footer-admin-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  text-decoration: none;
+  margin-top: 0.5rem;
+  transition: color 0.2s;
+}
+
+.footer-admin-link:hover {
+  color: var(--gold-light);
+}
+
+@keyframes modalPopIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+

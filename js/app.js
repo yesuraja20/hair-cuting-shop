@@ -340,4 +340,75 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+
+  // ==========================================================================
+  // 11. DYNAMIC HYDRATION (Supabase / Admin Sync for Pricing & Images)
+  // ==========================================================================
+  async function hydrateDynamicData() {
+    if (!window.AureusDB) return;
+
+    // 1. Hydrate Site Images
+    try {
+      const images = await window.AureusDB.getImages();
+      if (images) {
+        document.querySelectorAll('[data-image-key]').forEach(imgEl => {
+          const key = imgEl.getAttribute('data-image-key');
+          if (images[key]) {
+            imgEl.src = images[key];
+          }
+        });
+      }
+    } catch (e) {
+      console.warn('Image hydration error:', e);
+    }
+
+    // 2. Hydrate Services & Pricing
+    try {
+      const services = await window.AureusDB.getServices();
+      if (services && services.length) {
+        const currencySymbol = (window.AUREUS_CONFIG && window.AUREUS_CONFIG.payment && window.AUREUS_CONFIG.payment.currencySymbol) || '$';
+
+        services.forEach(service => {
+          // Update service card in #services section
+          const serviceCard = document.querySelector(`.service-card[data-service="${service.id}"]`);
+          if (serviceCard) {
+            const titleEl = serviceCard.querySelector('.service-title');
+            if (titleEl) titleEl.textContent = service.title;
+
+            const durationEl = serviceCard.querySelector('.service-duration');
+            if (durationEl) durationEl.textContent = service.duration;
+
+            const descEl = serviceCard.querySelector('.service-desc');
+            if (descEl) descEl.textContent = service.description;
+
+            const priceEl = serviceCard.querySelector('.service-price');
+            if (priceEl) priceEl.textContent = `${currencySymbol}${Number(service.price).toFixed(0)}`;
+          }
+
+          // Update booking pill in #booking section
+          const bookingInput = document.querySelector(`input[name="service"][value="${service.id}"]`);
+          if (bookingInput) {
+            const label = bookingInput.closest('.service-pill-label');
+            if (label) {
+              const nameEl = label.querySelector('.service-pill-name');
+              if (nameEl) nameEl.textContent = service.title;
+
+              const metaDiv = label.querySelector('.service-pill-meta');
+              if (metaDiv) {
+                const durationSpan = metaDiv.querySelector('span');
+                if (durationSpan) durationSpan.textContent = service.duration;
+
+                const priceStrong = metaDiv.querySelector('strong');
+                if (priceStrong) priceStrong.textContent = `${currencySymbol}${Number(service.price).toFixed(0)}`;
+              }
+            }
+          }
+        });
+      }
+    } catch (e) {
+      console.warn('Services hydration error:', e);
+    }
+  }
+
+  hydrateDynamicData();
 });
