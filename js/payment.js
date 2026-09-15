@@ -64,17 +64,20 @@
         throw new Error('Razorpay Checkout SDK could not be initialized.');
       }
 
-      // Determine active key (Custom key or default public test key)
-      const activeKey = (cfg.keyId && cfg.keyId.trim()) ? cfg.keyId.trim() : DEFAULT_TEST_KEY;
+      // Determine active key from config or prompt
+      const configuredKey = (cfg.keyId && cfg.keyId.trim()) ? cfg.keyId.trim() : '';
+      const activeKey = configuredKey || DEFAULT_TEST_KEY;
 
       return new Promise((resolve, reject) => {
-        // Clean phone number for Razorpay prefill (digits only, e.g. 9876543210)
+        // Clean phone number for Razorpay prefill (10 digits)
         const cleanPhone = (details.clientPhone || '').replace(/[^0-9]/g, '');
 
+        // Official Razorpay Checkout.js Options
+        // Currency MUST be 'INR' for standard Indian Razorpay accounts to enable UPI, Cards & NetBanking
         const options = {
           key: activeKey,
-          amount: Math.round(amount * 100), // In smallest currency subunit (paise/cents)
-          currency: currency === 'USD' ? 'USD' : 'INR',
+          amount: Math.round(amount * 100), // In paise (e.g. ₹65 = 6500 paise)
+          currency: 'INR', // Strictly INR to enable all payment methods
           name: 'Aureus & Blade Master Atelier',
           description: details.serviceName || 'Bespoke Grooming Ritual',
           image: 'https://cdn-icons-png.flaticon.com/512/2821/2821012.png',
