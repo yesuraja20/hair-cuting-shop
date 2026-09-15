@@ -162,10 +162,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (window.AureusPayment) {
           paymentResult = await window.AureusPayment.processPayment({
             amount: price,
-            currency: (window.AUREUS_CONFIG && window.AUREUS_CONFIG.payment && window.AUREUS_CONFIG.payment.currency) || 'USD',
+            currency: (window.AUREUS_CONFIG && window.AUREUS_CONFIG.payment && window.AUREUS_CONFIG.payment.currency) || 'INR',
             serviceName: serviceName,
             clientName: clientName,
             clientPhone: clientPhone,
+            barberName: barberName,
+            bookingDate: formattedDate,
+            timeSlot: timeSlot,
             method: paymentMethod
           });
         }
@@ -210,7 +213,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const modalPayEl = document.getElementById('modal-payment-status');
         if (modalPayEl) {
           if (paymentResult.paymentStatus === 'paid') {
-            modalPayEl.textContent = `Paid Online (${paymentResult.transactionId})`;
+            modalPayEl.textContent = `Paid Online via Razorpay (${paymentResult.transactionId})`;
             modalPayEl.style.color = '#10b981';
           } else {
             modalPayEl.textContent = `Pay at Atelier upon arrival ($${price})`;
@@ -243,8 +246,8 @@ document.addEventListener('DOMContentLoaded', () => {
         btnText.textContent = originalText;
         confirmBtn.style.background = '';
         confirmBtn.style.color = '';
-        if (err && err.message && !err.message.includes('cancelled')) {
-          alert('Payment processing error: ' + err.message);
+        if (err && err.message && !err.message.includes('closed') && !err.message.includes('cancelled')) {
+          alert('Razorpay Checkout Notice: ' + err.message);
         }
       }
     });

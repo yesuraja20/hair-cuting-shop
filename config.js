@@ -16,10 +16,10 @@
     // Payment Gateway
     payment: {
       mode: 'test', // 'test' or 'live'
-      provider: 'razorpay', // 'razorpay' | 'stripe' | 'simulated'
-      keyId: '', // Razorpay Key ID (e.g. 'rzp_test_...') or Stripe Publishable Key
-      currency: 'USD', // 'USD' or 'INR'
-      currencySymbol: '$',
+      provider: 'razorpay',
+      keyId: 'rzp_test_1DP5mmOlF5G5ag', // Default Razorpay Test Key for official Checkout.js
+      currency: 'INR', // 'INR' or 'USD'
+      currencySymbol: '₹',
       enableOnlinePayment: true,
       enablePayAtAtelier: true
     },

@@ -1,151 +1,51 @@
 /**
- * AUREUS & BLADE - ONLINE PAYMENT GATEWAY ENGINE
- * Supports:
- * 1. Pay at Atelier (Cash / Card on arrival)
- * 2. Razorpay / Stripe Live Payment Integration
- * 3. Interactive Luxury Test-Mode Checkout Modal with Cards, UPI, and Instant Receipts
+ * AUREUS & BLADE - OFFICIAL RAZORPAY CHECKOUT.JS ENGINE
+ * Integrates Razorpay's official hosted popup checkout widget (Checkout.js).
+ * Supports Cards, UPI (GPay, PhonePe, Paytm), NetBanking, and Wallets.
  */
 
 (function() {
-  function injectPaymentModalDOM() {
-    if (document.getElementById('aureus-payment-modal')) return;
+  const DEFAULT_TEST_KEY = 'rzp_test_1DP5mmOlF5G5ag';
 
-    const modalHTML = `
-      <div id="aureus-payment-modal" class="payment-modal-overlay" aria-hidden="true">
-        <div class="payment-modal-card">
-          <button class="payment-close-btn" id="btn-close-payment">&times;</button>
-          
-          <div class="payment-header">
-            <div class="payment-crest">⚜</div>
-            <h3>AUREUS &amp; BLADE</h3>
-            <p>Luxury Atelier &bull; Secure Checkout</p>
-          </div>
+  /**
+   * Ensure the official Razorpay Checkout.js script is dynamically loaded
+   */
+  function loadRazorpayScript() {
+    return new Promise((resolve, reject) => {
+      if (window.Razorpay) {
+        resolve(true);
+        return;
+      }
 
-          <div class="payment-summary-box">
-            <div class="pay-sum-row">
-              <span class="pay-sum-label" id="pay-service-label">Bespoke Ritual</span>
-              <strong class="pay-sum-val" id="pay-service-amount">$65.00</strong>
-            </div>
-            <div class="pay-sum-meta">
-              <span id="pay-client-name">Guest</span> &bull; <span id="pay-client-phone">Phone</span>
-            </div>
-          </div>
+      // Check if already in DOM
+      const existingScript = document.querySelector('script[src*="checkout.razorpay.com"]');
+      if (existingScript) {
+        existingScript.addEventListener('load', () => resolve(true));
+        existingScript.addEventListener('error', () => reject(new Error('Failed to load Razorpay Checkout script.')));
+        return;
+      }
 
-          <!-- Method Tabs -->
-          <div class="pay-method-tabs">
-            <button type="button" class="pay-tab active" data-tab="card">💳 Card</button>
-            <button type="button" class="pay-tab" data-tab="upi">⚡ UPI / QR</button>
-            <button type="button" class="pay-tab" data-tab="digital">📱 Wallet / GPay</button>
-          </div>
-
-          <!-- Card Form -->
-          <div class="pay-tab-content active" id="pay-tab-card">
-            <div class="pay-input-group">
-              <label>Cardholder Name</label>
-              <input type="text" id="pay-card-name" value="Alexander Sterling" placeholder="Name on card">
-            </div>
-            <div class="pay-input-group">
-              <label>Card Number</label>
-              <input type="text" id="pay-card-num" value="4532 &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; 8892" placeholder="4000 1234 5678 9010">
-            </div>
-            <div class="pay-input-row">
-              <div class="pay-input-group">
-                <label>Expiry</label>
-                <input type="text" id="pay-card-exp" value="12/28" placeholder="MM/YY">
-              </div>
-              <div class="pay-input-group">
-                <label>CVV / CVC</label>
-                <input type="password" id="pay-card-cvv" value="892" maxlength="4" placeholder="123">
-              </div>
-            </div>
-          </div>
-
-          <!-- UPI Form -->
-          <div class="pay-tab-content" id="pay-tab-upi">
-            <div class="pay-upi-qr-box">
-              <div class="upi-qr-mock">
-                <span>⚡</span>
-                <small>Scan with any UPI App<br>GPay / PhonePe / Paytm</small>
-              </div>
-              <div class="pay-input-group" style="width: 100%; margin-top: 1rem;">
-                <label>UPI ID / VPA</label>
-                <input type="text" id="pay-upi-id" placeholder="username@okhdfcbank" value="sterling@oksbi">
-              </div>
-            </div>
-          </div>
-
-          <!-- Digital Wallet -->
-          <div class="pay-tab-content" id="pay-tab-digital">
-            <div class="wallet-btn-group">
-              <button type="button" class="wallet-option-btn"> Pay with Apple Pay</button>
-              <button type="button" class="wallet-option-btn">G Pay with Google Pay</button>
-            </div>
-          </div>
-
-          <!-- Pay Button -->
-          <button type="button" class="btn-pay-now" id="btn-submit-payment">
-            <span class="pay-btn-lock">🔒</span>
-            <span id="pay-btn-text">AUTHORIZE PAYMENT &bull; $65.00</span>
-          </button>
-
-          <div class="pay-security-badge">
-            <span>256-Bit TLS Encryption &bull; PCI-DSS Level 1 Certified &bull; No Card Data Stored</span>
-          </div>
-        </div>
-      </div>
-    `;
-
-    document.body.insertAdjacentHTML('beforeend', modalHTML);
-    setupPaymentModalInteractions();
-  }
-
-  function setupPaymentModalInteractions() {
-    const modal = document.getElementById('aureus-payment-modal');
-    const closeBtn = document.getElementById('btn-close-payment');
-    const tabs = modal.querySelectorAll('.pay-tab');
-
-    tabs.forEach(tab => {
-      tab.addEventListener('click', () => {
-        tabs.forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-        const target = tab.getAttribute('data-tab');
-        modal.querySelectorAll('.pay-tab-content').forEach(c => c.classList.remove('active'));
-        const activeContent = document.getElementById('pay-tab-' + target);
-        if (activeContent) activeContent.classList.add('active');
-      });
+      const script = document.createElement('script');
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      script.async = true;
+      script.onload = () => resolve(true);
+      script.onerror = () => reject(new Error('Unable to connect to Razorpay payment servers. Please check your internet connection.'));
+      document.head.appendChild(script);
     });
-
-    if (closeBtn) {
-      closeBtn.addEventListener('click', () => {
-        if (window._currentPaymentReject) {
-          window._currentPaymentReject(new Error('Payment cancelled by user.'));
-        }
-        closeModal();
-      });
-    }
-  }
-
-  function closeModal() {
-    const modal = document.getElementById('aureus-payment-modal');
-    if (modal) {
-      modal.classList.remove('active');
-      modal.setAttribute('aria-hidden', 'true');
-    }
   }
 
   window.AureusPayment = {
     /**
      * Process payment
-     * @param {Object} details { amount, currency, serviceName, clientName, clientPhone, method }
+     * @param {Object} details { amount, currency, serviceName, clientName, clientPhone, barberName, bookingDate, timeSlot, method }
      * @returns {Promise<Object>}
      */
-    processPayment: function(details) {
+    processPayment: async function(details) {
       const cfg = (window.AUREUS_CONFIG && window.AUREUS_CONFIG.payment) || {};
-      const currency = cfg.currency || 'USD';
-      const symbol = cfg.currencySymbol || '$';
       const amount = Number(details.amount || 50);
+      const currency = cfg.currency || 'INR';
 
-      // 1. Pay at Atelier
+      // 1. Pay at Atelier Option (Cash / Card on arrival)
       if (details.method === 'atelier') {
         return Promise.resolve({
           success: true,
@@ -157,91 +57,80 @@
         });
       }
 
-      // 2. Razorpay Live Gateway (if key provided and SDK available)
-      if (cfg.provider === 'razorpay' && cfg.keyId && window.Razorpay) {
-        return new Promise((resolve, reject) => {
-          const options = {
-            key: cfg.keyId,
-            amount: amount * 100, // in smallest currency sub-unit (cents / paise)
-            currency: currency === 'USD' ? 'USD' : 'INR',
-            name: 'Aureus & Blade Atelier',
-            description: details.serviceName || 'Grooming Ritual Appointment',
-            image: 'assets/images/master-barber.jpg',
-            handler: function(response) {
-              resolve({
-                success: true,
-                method: 'online_razorpay',
-                paymentStatus: 'paid',
-                transactionId: response.razorpay_payment_id,
-                amount: amount,
-                currency: currency
-              });
-            },
-            prefill: {
-              name: details.clientName || '',
-              contact: details.clientPhone || ''
-            },
-            theme: {
-              color: '#d4af37' // Luxury gold
-            },
-            modal: {
-              ondismiss: function() {
-                reject(new Error('Razorpay payment cancelled.'));
-              }
-            }
-          };
-          const rzp = new window.Razorpay(options);
-          rzp.open();
-        });
+      // 2. Official Razorpay Checkout.js Integration
+      await loadRazorpayScript();
+
+      if (!window.Razorpay) {
+        throw new Error('Razorpay Checkout SDK could not be initialized.');
       }
 
-      // 3. Interactive Luxury Payment Modal (Default / Test Mode)
+      // Determine active key (Custom key or default public test key)
+      const activeKey = (cfg.keyId && cfg.keyId.trim()) ? cfg.keyId.trim() : DEFAULT_TEST_KEY;
+
       return new Promise((resolve, reject) => {
-        injectPaymentModalDOM();
-        window._currentPaymentReject = reject;
+        // Clean phone number for Razorpay prefill (digits only, e.g. 9876543210)
+        const cleanPhone = (details.clientPhone || '').replace(/[^0-9]/g, '');
 
-        const modal = document.getElementById('aureus-payment-modal');
-        document.getElementById('pay-service-label').textContent = details.serviceName || 'Bespoke Grooming Ritual';
-        document.getElementById('pay-service-amount').textContent = `${symbol}${amount.toFixed(2)}`;
-        document.getElementById('pay-client-name').textContent = details.clientName || 'Guest';
-        document.getElementById('pay-client-phone').textContent = details.clientPhone || 'Mobile';
-        document.getElementById('pay-btn-text').textContent = `AUTHORIZE PAYMENT \u2022 ${symbol}${amount.toFixed(2)}`;
-
-        modal.classList.add('active');
-        modal.setAttribute('aria-hidden', 'false');
-
-        const payBtn = document.getElementById('btn-submit-payment');
-        // Clear previous listeners
-        const newPayBtn = payBtn.cloneNode(true);
-        payBtn.parentNode.replaceChild(newPayBtn, payBtn);
-
-        newPayBtn.addEventListener('click', () => {
-          newPayBtn.disabled = true;
-          newPayBtn.innerHTML = '<span class="spinner-icon">&#9986;</span> <span>VERIFYING WITH ATELIER VAULT...</span>';
-
-          if (window.scissorEngine) {
-            window.scissorEngine.playSnipSound();
+        const options = {
+          key: activeKey,
+          amount: Math.round(amount * 100), // In smallest currency subunit (paise/cents)
+          currency: currency === 'USD' ? 'USD' : 'INR',
+          name: 'Aureus & Blade Master Atelier',
+          description: details.serviceName || 'Bespoke Grooming Ritual',
+          image: 'https://cdn-icons-png.flaticon.com/512/2821/2821012.png',
+          prefill: {
+            name: details.clientName || 'Alexander Sterling',
+            contact: cleanPhone || '9876543210',
+            email: 'concierge@aureusblade.com'
+          },
+          notes: {
+            service_ritual: details.serviceName || 'The Royal Executive Cut',
+            barber_craftsman: details.barberName || 'Marcus Vance',
+            appointment_date: details.bookingDate || 'Today',
+            time_slot: details.timeSlot || '11:00 AM'
+          },
+          theme: {
+            color: '#d4af37', // Atelier Gold accent
+            backdrop_color: '#070709'
+          },
+          modal: {
+            backdropclose: false,
+            escape: true,
+            handleback: true,
+            confirm_close: true,
+            ondismiss: function() {
+              reject(new Error('Razorpay checkout was closed by user.'));
+            }
+          },
+          handler: function(response) {
+            // Official Razorpay Payment Response
+            resolve({
+              success: true,
+              method: 'online_razorpay',
+              paymentStatus: 'paid',
+              transactionId: response.razorpay_payment_id || ('RZP_' + Date.now()),
+              orderId: response.razorpay_order_id || null,
+              signature: response.razorpay_signature || null,
+              amount: amount,
+              currency: currency,
+              rawResponse: response
+            });
           }
+        };
 
-          setTimeout(() => {
-            newPayBtn.style.background = '#10b981';
-            newPayBtn.innerHTML = '<span>&#10003; PAYMENT AUTHORIZED</span>';
+        try {
+          const rzpInstance = new window.Razorpay(options);
 
-            setTimeout(() => {
-              closeModal();
-              newPayBtn.disabled = false;
-              newPayBtn.style.background = '';
-              resolve({
-                success: true,
-                method: 'online',
-                paymentStatus: 'paid',
-                transactionId: 'TXN_AB_' + Math.floor(100000 + Math.random() * 900000),
-                amount: amount,
-                currency: currency
-              });
-            }, 600);
-          }, 1200);
-        });
+          rzpInstance.on('payment.failed', function(response) {
+            console.error('Razorpay payment failed:', response.error);
+            reject(new Error(response.error.description || 'Payment transaction failed.'));
+          });
+
+          rzpInstance.open();
+        } catch (err) {
+          console.error('Razorpay invocation error:', err);
+          reject(err);
+        }
       });
     }
   };
